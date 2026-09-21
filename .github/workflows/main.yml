@@ -8,14 +8,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build App via SPM
+      - name: Build App
         run: |
-          # Собираем проект напрямую через Swift Package Manager без участия Xcode-проекта
-          swift build -c release --triple arm64-apple-macosx
-          
-          # Упаковываем скомпилированный бинарный файл в архив
-          cd .build/arm64-apple-macosx/release/
-          zip -r ../../../Compositor-M4.zip Compositor
+          xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release -derivedDataPath BuildData/ ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SWIFT_OPTIMIZATION_LEVEL=-O
+          cd BuildData/Build/Products/Release
+          zip -r ../../../../Compositor-M4.zip Compositor.app
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
