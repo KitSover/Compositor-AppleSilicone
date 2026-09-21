@@ -1,0 +1,21 @@
+name: Build Mac App M4
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build App
+        run: |
+          xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release -derivedDataPath BuildData/
+          cd BuildData/Build/Products/Release
+          zip -r ../../../../Compositor-M4.zip Compositor.app
+
+      - name: Upload Artifact
+        uses: actions/artifacts/upload-artifact@v4
+        with:
+          name: Compositor-M4-App
+          path: Compositor-M4.zip
