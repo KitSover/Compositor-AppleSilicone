@@ -15,7 +15,7 @@ jobs:
           zip -r ../../../../Compositor-M4.zip Compositor.app
 
       - name: Upload Artifact
-        uses: actions/artifacts/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: Compositor-M4-App
           path: Compositor-M4.zip
