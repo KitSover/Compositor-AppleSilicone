@@ -3,24 +3,22 @@ on: [workflow_dispatch]
 
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: macos-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Fix Swift Compiler Error
+      - name: Build App via SPM
         run: |
-          sed -i '' 's/case .success(let urls): Task { await session.importImages(urls) }/case .success(let urls):\n            let targetUrls = urls\n            Task { await session.importImages(targetUrls) }/' Compositor/ContentView.swift
-
-      - name: Build App
-        run: |
-          xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release -derivedDataPath BuildData/ ARCHS=arm64 ONLY_ACTIVE_ARCH=YES GCC_TREAT_WARNINGS_AS_ERRORS=NO SWIFT_TREAT_WARNINGS_AS_ERRORS=NO COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-          cd BuildData/Build/Products/Release
-          zip -r ../../../../Compositor-M4.zip Compositor.app
+          # Собираем проект напрямую через Swift Package Manager без участия Xcode-проекта
+          swift build -c release --triple arm64-apple-macosx
+          
+          # Упаковываем скомпилированный бинарный файл в архив
+          cd .build/arm64-apple-macosx/release/
+          zip -r ../../../Compositor-M4.zip Compositor
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Compositor-M4-App
           path: Compositor-M4.zip
-
