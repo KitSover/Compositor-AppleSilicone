@@ -3,14 +3,14 @@ on: [workflow_dispatch]
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-26
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Build App
         run: |
-          xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release -derivedDataPath BuildData/ ONLY_ACTIVE_ARCH=NO GCC_TREAT_WARNINGS_AS_ERRORS=NO SWIFT_TREAT_WARNINGS_AS_ERRORS=NO COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+          xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release -derivedDataPath BuildData/ ONLY_ACTIVE_ARCH=NO GCC_TREAT_WARNINGS_AS_ERRORS=NO SWIFT_TREAT_WARNINGS_AS_ERRORS=NO COMPILER_INDEX_STORE_ENABLE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO OTHER_SWIFT_FLAGS="-strict-concurrency=minimal"
           cd BuildData/Build/Products/Release
           zip -r ../../../../Compositor-M4.zip Compositor.app
 
